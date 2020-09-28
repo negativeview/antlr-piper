@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'antlr'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    antlr "org.antlr:antlr4:4.8"
+    implementation 'org.antlr:antlr4:4.8'
+    implementation 'org.bytedeco:llvm-platform:10.0.1-1.5.4'
+}
+
+application {
+    mainClassName = 'com.gracefulcode.piper.App'
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-Xlint:unchecked'
+    options.compilerArgs << '-Xlint:deprecation'
+    options.deprecation = true
+}
+
+// generateGrammarSource {
+//     maxHeapSize = "64m"
+//     arguments += ['-package', 'com.gracefulcode.piper.Piper']
+//     outputDirectory = new File("generated-src/antlr/main/com/gracefulcode/piper/Piper".toString())
+// }
+// compileJava.dependsOn generateGrammarSource
+// sourceSets {
+//     generated {
+//         java.srcDir 'generated-src/antlr/main/'
+//     }
+// }
+// compileJava.source sourceSets.generated.java, sourceSets.main.java
+
+// clean {
+//     delete "generated-src"
+// }
+
+generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments += ["-visitor", "-long-messages", "-package", "com.gracefulcode.piper.generated"]
+    outputDirectory = new File("src/main/java/com/gracefulcode/piper/generated")
+}

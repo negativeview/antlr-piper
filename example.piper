@@ -1,0 +1,65 @@
+struct fib_input {
+    @Range(0, 45)
+    a: i8 = 1
+}
+
+fib_input -> i16 {
+    out = in.a;
+}
+
+struct fib_output {
+    @Range(0, 1134903170)
+    a: i16 = 2
+}
+
+i16 -> fib_output {
+    out.a = in;
+}
+
+struct not_used {
+    a: fib_input,
+    b: fib_output,
+    c: i16 = 0,
+    d: i32 = 5
+}
+
+not_used => i32 {
+    ((out)) = in.a + ((in).b + in.c) + in.d;
+}
+
+fib_input == fib_output {
+    return left.a == right.a;
+}
+
+fib_input -> fib_output {
+    out.a = in.a;
+}
+
+function fib(fib_input) -> fib_output {
+    if (a < 2) {
+        fib_output = fib_input;
+    } else {
+        fib_output = fib(fib_input - 1) + fib(fib_input - 2);
+    }
+}
+
+function eratosthenes(max_num: i16) {
+    let is_prime: bool[2..max_num] = 1;
+
+    is_prime
+        .filter(
+            (p: i16) -> bool {
+                return is_prime[p];
+            }
+        )
+        .each(
+            (p: i16) {
+                let base: i16 = p * p;
+                [base..max_num].each(
+                    (e: i16) {
+                        is_prime[e] = 0;
+                    }
+                );
+            }
+        );
+}
