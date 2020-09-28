@@ -9,10 +9,10 @@ class Expression {
     protected PiperParser.ExpressionContext context;
     protected LLVMValueRef value;
 
-    public Expression(PiperParser.ExpressionContext context, DataType goalType) {
+    public Expression(PiperParser.ExpressionContext context, VariableContext variableContext, DataType goalType) {
         this.context = context;
         if (context.left_expression() != null) {
-            LeftExpression leftExpression = new LeftExpression(context.left_expression());
+            LeftExpression leftExpression = new LeftExpression(context.left_expression(), variableContext);
         } else if (context.DOUBLE_DOT() != null) {
             System.out.println("Got double dot");
         } else if (context.NUMBER(0) != null) {
@@ -37,11 +37,11 @@ class Expression {
     public static class LeftExpression {
         protected PiperParser.Left_expressionContext context;
 
-        public LeftExpression(PiperParser.Left_expressionContext context) {
-            this.parse(context);
+        public LeftExpression(PiperParser.Left_expressionContext context, VariableContext variableContext) {
+            this.parse(context, variableContext);
         }
 
-        protected void parse(PiperParser.Left_expressionContext context) {
+        protected void parse(PiperParser.Left_expressionContext context, VariableContext variableContext) {
             this.context = context;
             System.out.println("LEFT EXPRESSION: " + this.context.getText());
 
@@ -49,13 +49,22 @@ class Expression {
                 // left_expression DOT ID
             } else if (this.context.ID() != null) {
                 // ID -- terminal
-                System.out.println("JUST ID: " + this.context.ID().getText());
+                VariableContext.Variable variable = variableContext.getVariable(this.context.ID().getText());
+                if (variable == null) {
+                    System.out.println(
+                        "JUST ID, NOT FOUND: " + this.context.ID().getText()
+                    );
+                } else {
+                    System.out.println(
+                        "JUST ID: " + this.context.ID().getText() + " -> " + variableContext.getVariable(this.context.ID().getText()).toString()
+                    );
+                }
             } else if (this.context.expression() != null) {
                 // left_expression LSQUARE expression RSQUARE
             } else if (this.context.left_expression() != null) {
                 // '(' left_expression ')'
                 // All we need to do is pretend like the parens aren't there
-                this.parse(this.context.left_expression());
+                this.parse(this.context.left_expression(), variableContext);
             } else {
                 // WHAT?!
             }

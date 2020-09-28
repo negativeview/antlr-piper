@@ -83,8 +83,11 @@ public class MemberVariable {
     protected void parseInitialization(
         PiperParser.Member_initialized_variableContext context
     ) {
+        VariableContext variableContext = new VariableContext();
+
         Expression expression = new Expression(
             context.expression(),
+            variableContext,
             this.type
         );
         this.initializedTo = expression.getValue();

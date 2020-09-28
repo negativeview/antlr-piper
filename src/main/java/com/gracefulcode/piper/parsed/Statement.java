@@ -6,7 +6,7 @@ public class Statement {
     protected PiperParser.StatementContext context;
     protected SubStatement subStatement;
 
-    public Statement(PiperParser.StatementContext context) {
+    public Statement(PiperParser.StatementContext context, VariableContext variableContext) {
         this.context = context;
 
         System.out.println("Statement: " + this.context.getText());
@@ -15,7 +15,7 @@ public class Statement {
         } else if (this.context.return_statement() != null) {
             System.out.println("\tRETURN");
         } else if (this.context.assignment_statement() != null) {
-            this.subStatement = new AssignmentStatement(this.context.assignment_statement());
+            this.subStatement = new AssignmentStatement(this.context.assignment_statement(), variableContext);
         } else if (this.context.let_statement() != null) {
             System.out.println("\tLET");
         } else if (this.context.expression() != null) {
@@ -32,16 +32,15 @@ public class Statement {
     public static class AssignmentStatement implements SubStatement {
         protected PiperParser.Assignment_statementContext context;
 
-        public AssignmentStatement(PiperParser.Assignment_statementContext context) {
+        public AssignmentStatement(PiperParser.Assignment_statementContext context, VariableContext variableContext) {
             this.context = context;
 
-            Expression.LeftExpression leftExpression = new Expression.LeftExpression(this.context.left_expression());
+            Expression.LeftExpression leftExpression = new Expression.LeftExpression(this.context.left_expression(), variableContext);
             Expression rightExpression = new Expression(
                 this.context.expression(),
+                variableContext,
                 leftExpression.getDataType()
             );
-
-            // System.out.println("ASSIGNMENT\n\tLEFT: " + this.context.left_expression().getText() + "\n\tRIGHT: " + this.context.expression().getText());
         }
     }
 }

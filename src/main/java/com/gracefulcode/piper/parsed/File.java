@@ -100,11 +100,7 @@ public class File {
         LLVMModuleRef module
     ) {
         for (PiperParser.Auto_casting_blockContext context: this.fileContext.auto_casting_block()) {
-            String from = context.ID(0).getText();
-            String to = context.ID(1).getText();
-            boolean isExpensive = context.FAT_ARROW() != null;
-
-            CodeBlock codeBlock = new CodeBlock(context.code_block());
+            Casting casting = new Casting(context, this.structs);
         }
     }
 
